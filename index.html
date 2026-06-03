@@ -1,29 +1,149 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
+
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>ESCÁNER TEC45</title>
 
+<script src="https://unpkg.com/html5-qrcode"></script>
+
 <style>
+
 body{
   font-family:Arial;
   text-align:center;
+  margin:0;
   padding:20px;
 }
-h1{
-  font-size:40px;
+
+#reader{
+  width:100%;
+  max-width:600px;
+  margin:auto;
 }
+
+#resultado{
+  display:none;
+}
+
+.nombre{
+  font-size:50px;
+  font-weight:bold;
+  margin-top:20px;
+}
+
+.grupo{
+  font-size:40px;
+  margin-top:20px;
+}
+
+.uniforme{
+  font-size:55px;
+  font-weight:bold;
+  color:blue;
+  border:5px solid blue;
+  border-radius:20px;
+  padding:20px;
+  margin-top:25px;
+}
+
+.ok{
+  font-size:70px;
+  color:green;
+}
+
 </style>
 
 </head>
 
 <body>
 
+<div id="escaner">
+
 <h1>📷 ESCÁNER TEC45</h1>
 
-<h2>Página funcionando correctamente</h2>
+<div id="reader"></div>
+
+</div>
+
+<div id="resultado">
+
+<div class="ok">✅</div>
+
+<div class="nombre" id="nombre"></div>
+
+<div class="grupo" id="grupo"></div>
+
+<div class="uniforme" id="uniforme"></div>
+
+</div>
+
+<script>
+
+const API =
+"https://script.google.com/macros/s/AKfycbzjVE9E4Vfqdey2xKhqBchqLWf7TqMXKI_U9IO3bAugFcNuhKf7y3nIzEJonU43vrY4/exec";
+
+let scanner;
+
+function iniciarScanner(){
+
+scanner = new Html5QrcodeScanner(
+"reader",
+{
+fps:10,
+qrbox:250
+},
+false
+);
+
+scanner.render(leido);
+
+}
+
+async function leido(curp){
+
+scanner.clear();
+
+const respuesta = await fetch(
+API + "?curp=" + encodeURIComponent(curp)
+);
+
+const datos = await respuesta.json();
+
+if(datos.ok){
+
+document.getElementById("escaner").style.display="none";
+
+document.getElementById("resultado").style.display="block";
+
+document.getElementById("nombre").innerHTML =
+datos.nombre;
+
+document.getElementById("grupo").innerHTML =
+"Grupo: " + datos.grupo;
+
+document.getElementById("uniforme").innerHTML =
+datos.uniforme;
+
+setTimeout(function(){
+
+document.getElementById("resultado").style.display="none";
+
+document.getElementById("escaner").style.display="block";
+
+iniciarScanner();
+
+},4000);
+
+}
+
+}
+
+iniciarScanner();
+
+</script>
 
 </body>
 </html>
