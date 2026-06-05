@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>SALIDAS TEC45</title>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+
+body{
+  font-family:Arial;
+  text-align:center;
+  padding:20px;
+}
+
+#reader{
+  width:100%;
+  max-width:600px;
+  margin:auto;
+}
+
+#panel{
+  display:none;
+}
+
+.nombre{
+  font-size:42px;
+  font-weight:bold;
+  margin-top:20px;
+}
+
+.grupo{
+  font-size:30px;
+  margin-top:10px;
+}
+
+textarea{
+  width:90%;
+  height:120px;
+  font-size:22px;
+  margin-top:20px;
+}
+
+button{
+  font-size:24px;
+  padding:15px 30px;
+  margin-top:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>🚪 SALIDAS TEC45</h1>
+
+<div id="reader"></div>
+
+<div id="panel">
+
+<div class="nombre" id="nombre"></div>
+
+<div class="grupo" id="grupo"></div>
+
+<br>
+
+<label>Motivo de salida</label>
+
+<br><br>
+
+<textarea
+id="motivo"
+placeholder="Escriba el motivo de salida">
+</textarea>
+
+<br>
+
+<button onclick="registrarSalida()">
+Registrar salida
+</button>
+
+</div>
+
+<script>
+
+const API =
+"https://script.google.com/macros/s/AKfycbzjVE9E4Vfqdey2xKhqBchqLWf7TqMXKI_U9IO3bAugFcNuhKf7y3nIzEJonU43vrY4/exec";
+
+let curpActual = "";
+
+let scanner;
+
+function iniciarScanner(){
+
+scanner = new Html5QrcodeScanner(
+"reader",
+{
+fps:10,
+qrbox:250
+},
+false
+);
+
+scanner.render(leido);
+
+}
+
+async function leido(curp){
+
+curpActual = curp;
+
+const respuesta = await fetch(
+API + "?curp=" + encodeURIComponent(curp)
+);
+
+const datos = await respuesta.json();
+
+if(datos.ok){
+
+document.getElementById("nombre").innerHTML =
+datos.nombre;
+
+document.getElementById("grupo").innerHTML =
+"Grupo: " + datos.grupo;
+
+document.getElementById("panel").style.display =
+"block";
+
+scanner.clear();
+
+}else{
+
+alert(datos.mensaje);
+
+}
+
+}
+
+async function registrarSalida(){
+
+var motivo =
+document.getElementById("motivo").value.trim();
+
+if(motivo == ""){
+
+alert("Escriba el motivo");
+
+return;
+
+}
+
+const respuesta = await fetch(
+
+API +
+"?accion=salida" +
+"&curp=" + encodeURIComponent(curpActual) +
+"&motivo=" + encodeURIComponent(motivo)
+
+);
+
+const datos = await respuesta.json();
+
+if(datos.ok){
+
+alert("Salida registrada correctamente");
+
+location.reload();
+
+}else{
+
+alert(datos.mensaje);
+
+}
+
+}
+
+iniciarScanner();
+
+</script>
+
+</body>
+</html>
