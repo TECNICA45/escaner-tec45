@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Reporte TEC45</title>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+body{
+font-family:Arial;
+text-align:center;
+padding:20px;
+}
+
+#reader{
+max-width:500px;
+margin:auto;
+}
+
+input,select,textarea,button{
+width:90%;
+max-width:500px;
+padding:12px;
+margin:10px;
+font-size:18px;
+}
+
+button{
+background:#0b57d0;
+color:white;
+border:none;
+border-radius:8px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>📋 Nuevo Reporte</h1>
+
+<p>Escanee al alumno que reporta</p>
+
+<div id="reader"></div>
+
+<input type="text" id="curpReporta" placeholder="CURP Reporta" readonly>
+
+<input type="text" id="curpReportado" placeholder="CURP Reportado" readonly>
+
+<select id="motivo">
+<option>Agresión verbal</option>
+<option>Agresión física</option>
+<option>Bullying</option>
+<option>Daño a pertenencias</option>
+<option>Incumplimiento de acuerdos</option>
+<option>Conducta inapropiada</option>
+<option>Otro</option>
+</select>
+
+<textarea id="observaciones" rows="4" placeholder="Observaciones"></textarea>
+
+<button onclick="guardarReporte()">
+Guardar Reporte
+</button>
+
+<script>
+
+const API_REPORTE =
+"https://script.google.com/macros/s/AKfycbyDwW3m4z2Mrz878Czlbkpiy75WzV0sALyOJEBv3XzuQ33VRiBL3J0hS7PFE-QMnAoE8Q/exec";
+
+let paso = 1;
+
+const scanner = new Html5QrcodeScanner(
+"reader",
+{
+fps:10,
+qrbox:250
+},
+false
+);
+
+scanner.render(function(curp){
+
+if(paso===1){
+
+document.getElementById("curpReporta").value=curp;
+
+alert("Ahora escanee al alumno reportado");
+
+paso=2;
+
+return;
+
+}
+
+if(paso===2){
+
+document.getElementById("curpReportado").value=curp;
+
+alert("Listo. Capture el motivo.");
+
+paso=3;
+
+}
+
+});
+
+async function guardarReporte(){
+
+const url =
+API_REPORTE +
+"?accion=reporte" +
+"&curpReporta=" +
+encodeURIComponent(
+document.getElementById("curpReporta").value
+) +
+"&curpReportado=" +
+encodeURIComponent(
+document.getElementById("curpReportado").value
+) +
+"&motivo=" +
+encodeURIComponent(
+document.getElementById("motivo").value
+) +
+"&observaciones=" +
+encodeURIComponent(
+document.getElementById("observaciones").value
+);
+
+const r = await fetch(url);
+
+const datos = await r.json();
+
+alert(
+"Reporte guardado. Folio: " +
+datos.folio
+);
+
+location.reload();
+
+}
+
+</script>
+
+</body>
+</html>
