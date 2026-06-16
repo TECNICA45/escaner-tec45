@@ -50,7 +50,17 @@ border-radius:8px;
 <input type="text" id="curpReporta" placeholder="CURP Reporta" readonly>
 
 <input type="text" id="curpReportado" placeholder="CURP Reportado" readonly>
+<div id="datosReporta" style="display:none;border:2px solid #2196F3;padding:15px;margin:10px;border-radius:10px;">
+<h3>👤 Alumno que reporta</h3>
+<div id="nombreReporta"></div>
+<div id="grupoReporta"></div>
+</div>
 
+<div id="datosReportado" style="display:none;border:2px solid #f44336;padding:15px;margin:10px;border-radius:10px;">
+<h3>👤 Alumno reportado</h3>
+<div id="nombreReportado"></div>
+<div id="grupoReportado"></div>
+</div>
 <select id="motivo">
 <option>Agresión verbal</option>
 <option>Agresión física</option>
@@ -89,6 +99,28 @@ if(paso===1){
 
 document.getElementById("curpReporta").value=curp;
 
+fetch(
+API_REPORTE +
+"?accion=consultarAlumno&curp=" +
+encodeURIComponent(curp)
+)
+.then(r=>r.json())
+.then(datos=>{
+
+if(datos.ok){
+
+document.getElementById("datosReporta").style.display="block";
+
+document.getElementById("nombreReporta").innerHTML =
+"<b>" + datos.nombre + "</b>";
+
+document.getElementById("grupoReporta").innerHTML =
+"Grupo: " + datos.grupo;
+
+}
+
+});
+
 alert("Ahora escanee al alumno reportado");
 
 paso=2;
@@ -101,12 +133,33 @@ if(paso===2){
 
 document.getElementById("curpReportado").value=curp;
 
+fetch(
+API_REPORTE +
+"?accion=consultarAlumno&curp=" +
+encodeURIComponent(curp)
+)
+.then(r=>r.json())
+.then(datos=>{
+
+if(datos.ok){
+
+document.getElementById("datosReportado").style.display="block";
+
+document.getElementById("nombreReportado").innerHTML =
+"<b>" + datos.nombre + "</b>";
+
+document.getElementById("grupoReportado").innerHTML =
+"Grupo: " + datos.grupo;
+
+}
+
+});
+
 alert("Listo. Capture el motivo.");
 
 paso=3;
 
 }
-
 });
 
 async function guardarReporte(){
