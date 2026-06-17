@@ -163,37 +163,41 @@ paso=3;
 });
 
 async function guardarReporte(){
-alert("Entré a guardarReporte");
+
+try{
+
+alert("1. Entré a guardarReporte");
+
 const url =
 API_REPORTE +
 "?accion=reporte" +
 "&curpReporta=" +
-encodeURIComponent(
-document.getElementById("curpReporta").value
-) +
+encodeURIComponent(document.getElementById("curpReporta").value) +
 "&curpReportado=" +
-encodeURIComponent(
-document.getElementById("curpReportado").value
-) +
+encodeURIComponent(document.getElementById("curpReportado").value) +
 "&motivo=" +
-encodeURIComponent(
-document.getElementById("motivo").value
-) +
+encodeURIComponent(document.getElementById("motivo").value) +
 "&observaciones=" +
-encodeURIComponent(
-document.getElementById("observaciones").value
-);
+encodeURIComponent(document.getElementById("observaciones").value);
+
+alert("2. URL creada");
+
+alert(url);
 
 const r = await fetch(url);
 
-const datos = await r.json();
+alert("3. Respuesta recibida");
 
-alert(
-"Reporte guardado. Folio: " +
-datos.folio
-);
+const texto = await r.text();
 
-location.reload();
+alert(texto);
+
+}catch(error){
+
+alert("ERROR: " + error);
+
+}
+
 
 }
 
