@@ -166,8 +166,6 @@ async function guardarReporte(){
 
 try{
 
-alert("1. Entré a guardarReporte");
-
 const url =
 API_REPORTE +
 "?accion=reporte" +
@@ -180,17 +178,26 @@ encodeURIComponent(document.getElementById("motivo").value) +
 "&observaciones=" +
 encodeURIComponent(document.getElementById("observaciones").value);
 
-alert("2. URL creada");
-
-alert(url);
-
 const r = await fetch(url);
 
-alert("3. Respuesta recibida");
+const datos = await r.json();
 
-const texto = await r.text();
+if(datos.ok){
 
-alert(texto);
+alert(
+"✅ REPORTE REGISTRADO\n\n" +
+"Folio: " + datos.folio +
+"\n\n👤 Reporta:\n" + datos.reporta +
+"\n\n👤 Reportado:\n" + datos.reportado
+);
+
+location.reload();
+
+}else{
+
+alert(datos.mensaje);
+
+}
 
 }catch(error){
 
@@ -198,8 +205,9 @@ alert("ERROR: " + error);
 
 }
 
-
 }
+
+  }
 
 </script>
 
