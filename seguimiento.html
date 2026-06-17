@@ -144,5 +144,48 @@ document.getElementById("motivo").innerHTML =
 alert(datos.mensaje);
 
 }
+async function guardarSeguimiento(){
+
+const url =
+API +
+"?accion=guardarSeguimiento" +
+"&folio=" +
+encodeURIComponent(document.getElementById("folio").value) +
+"&responsable=" +
+encodeURIComponent(document.getElementById("responsable").value) +
+"&accionRealizada=" +
+encodeURIComponent(document.getElementById("accionRealizada").value) +
+"&tutorInformado=" +
+encodeURIComponent(document.getElementById("tutorInformado").value) +
+"&citatorio=" +
+encodeURIComponent(document.getElementById("citatorio").value) +
+"&acuerdo=" +
+encodeURIComponent(document.getElementById("acuerdo").value) +
+"&estatus=" +
+encodeURIComponent(document.getElementById("estatus").value) +
+"&observaciones=" +
+encodeURIComponent(document.getElementById("observaciones").value);
+
+const r = await fetch(url);
+
+const datos = await r.json();
+
+if(datos.ok){
+
+alert("✅ Seguimiento guardado correctamente");
+
+location.reload();
+
+}else{
+
+alert(datos.mensaje);
+
+}
+
+}
+</script>
+
+</body>
+</html>
 
 }
