@@ -465,73 +465,35 @@ let responsableActual = "";
 
 async function validarResponsable(){
 
-const clave =
-document.getElementById("clave").value.trim();
+const clave = document.getElementById("clave").value.trim();
 
 if(clave==""){
-
-alert("Ingrese su clave");
-
-return;
-
+    alert("Ingrese su clave");
+    return;
 }
 
 const r = await fetch(
-
 API +
 "?accion=validarResponsable&clave=" +
 encodeURIComponent(clave)
-
 );
 
 const datos = await r.json();
 
 if(datos.ok){
 
-alert(
-"✅ Seguimiento guardado correctamente.\n\nGracias " +
-responsableActual
-);
+    responsableActual = datos.responsable;
 
-// Cerrar sesión
-responsableActual = "";
+    document.getElementById("responsableLogueado").innerHTML =
+    "✅ Bienvenido<br><b>" + datos.responsable + "</b>";
 
-// Limpiar clave
-document.getElementById("clave").value = "";
-
-// Limpiar nombre del responsable
-document.getElementById("responsableLogueado").innerHTML = "";
-
-// Ocultar todo el contenido
-document.getElementById("contenido").classList.add("oculto");
-
-// Limpiar búsqueda
-document.getElementById("folio").value = "";
-
-// Limpiar formulario
-document.getElementById("accionRealizada").value = "";
-document.getElementById("acuerdo").value = "";
-document.getElementById("observaciones").value = "";
-
-document.getElementById("estatus").value = "EN PROCESO";
-document.getElementById("tutorInformado").value = "SI";
-document.getElementById("citatorio").value = "SI";
-
-// Ocultar paneles
-document.getElementById("panelReporte").classList.add("oculto");
-document.getElementById("panelSeguimiento").classList.add("oculto");
-document.getElementById("panelHistorial").classList.add("oculto");
-
-// Limpiar historial
-document.getElementById("historial").innerHTML =
-"Aquí aparecerán los seguimientos realizados.";
-
-// Colocar cursor nuevamente en la clave
-document.getElementById("clave").focus();
+    document.getElementById("contenido").classList.remove("oculto");
 
 }else{
 
-alert(datos.mensaje);
+    alert(datos.mensaje);
+
+}
 
 }
 }
