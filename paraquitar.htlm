@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Seguimiento TEC45</title>
+
+<style>
+
+body{
+font-family:Arial;
+text-align:center;
+padding:20px;
+}
+
+input,textarea,select,button{
+width:90%;
+max-width:500px;
+padding:12px;
+margin:10px;
+font-size:18px;
+}
+
+button{
+background:#0b57d0;
+color:white;
+border:none;
+border-radius:8px;
+}
+
+#datos{
+display:none;
+border:2px solid #0b57d0;
+padding:15px;
+border-radius:10px;
+margin:15px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>📋 Seguimiento Disciplinario</h1>
+<div id="login">
+
+<input
+type="text"
+id="clave"
+placeholder="Ingrese su clave (RTM, JTT, SHS...)"
+>
+
+<button onclick="validarResponsable()">
+Ingresar
+</button>
+
+<h3 id="responsableLogueado"></h3>
+
+</div>
+<input
+type="text"
+id="folio"
+placeholder="Folio 2627-0001"
+<div id="contenido" style="display:none;">
+</div>
+>
+
+<button onclick="buscarReporte()">
+Buscar Reporte
+</button>
+
+<div id="datos">
+
+<h3 id="reporta"></h3>
+
+<h3 id="reportado"></h3>
+
+<p id="motivo"></p>
+
+<input
+type="text"
+id="responsable"
+placeholder="Responsable"
+
+>
+
+<textarea
+id="accionRealizada"
+placeholder="Acción realizada"
+></textarea>
+<select id="tutorInformado">
+<option value="SI">Tutor informado: SI</option>
+<option value="NO">Tutor informado: NO</option>
+</select>
+
+<select id="citatorio">
+<option value="SI">Citatorio: SI</option>
+<option value="NO">Citatorio: NO</option>
+</select>
+
+<textarea
+id="acuerdo"
+placeholder="Acuerdo"
+></textarea>
+
+<select id="estatus">
+<option value="PENDIENTE">PENDIENTE</option>
+<option value="EN PROCESO">EN PROCESO</option>
+<option value="CERRADO">CERRADO</option>
+</select>
+
+<textarea
+id="observaciones"
+placeholder="Observaciones"
+></textarea>
+
+<button onclick="guardarSeguimiento()">
+Guardar Seguimiento
+</button>
+
+</div>
+<script>
+
+const API =
+"https://script.google.com/macros/s/AKfycbyDwW3m4z2Mrz878Czlbkpiy75WzV0sALyOJEBv3XzuQ33VRiBL3J0hS7PFE-QMnAoE8Q/exec";
+const API =
+"https://script.google.com/macros/s/AKfycbyDwW3m4z2Mrz878Czlbkpiy75WzV0sALyOJEBv3XzuQ33VRiBL3J0hS7PFE-QMnAoE8Q/exec";
+
+let responsableActual = "";
+
+async function validarResponsable(){
+
+const clave =
+document.getElementById("clave").value;
+
+const r = await fetch(
+API +
+"?accion=validarResponsable&clave=" +
+encodeURIComponent(clave)
+);
+
+const datos = await r.json();
+
+if(datos.ok){
+
+responsableActual = datos.responsable;
+
+document.getElementById("responsableLogueado").innerHTML =
+"✅ Bienvenido<br><b>" +
+datos.responsable +
+"</b>";
+
+document.getElementById("contenido").style.display =
+"block";
+
+}else{
+
+alert("Clave incorrecta");
+
+}
+
+}
+
+async function buscarReporte(){
+
+const folio =
+document.getElementById("folio").value;
+
+// ...
+async function buscarReporte(){
+
+const folio =
+document.getElementById("folio").value;
+
+const r = await fetch(
+API +
+"?accion=buscarReporte&folio=" +
+encodeURIComponent(folio)
+);
+
+const datos = await r.json();
+
+if(datos.ok){
+
+document.getElementById("datos").style.display="block";
+
+document.getElementById("reporta").innerHTML =
+"👤 Reporta: " + datos.reporta;
+
+document.getElementById("reportado").innerHTML =
+"👤 Reportado: " + datos.reportado;
+
+document.getElementById("motivo").innerHTML =
+"Motivo: " + datos.motivo;
+
+}else{
+
+alert(datos.mensaje);
+
+}
+} //
+async function guardarSeguimiento(){
+
+const url =
+API +
+"?accion=guardarSeguimiento" +
+"&folio=" +
+encodeURIComponent(document.getElementById("folio").value) +
+"&responsable=" +
+encodeURIComponent(document.getElementById("responsable").value) +
+"&accionRealizada=" +
+encodeURIComponent(document.getElementById("accionRealizada").value) +
+"&tutorInformado=" +
+encodeURIComponent(document.getElementById("tutorInformado").value) +
+"&citatorio=" +
+encodeURIComponent(document.getElementById("citatorio").value) +
+"&acuerdo=" +
+encodeURIComponent(document.getElementById("acuerdo").value) +
+"&estatus=" +
+encodeURIComponent(document.getElementById("estatus").value) +
+"&observaciones=" +
+encodeURIComponent(document.getElementById("observaciones").value);
+
+const r = await fetch(url);
+
+const datos = await r.json();
+
+if(datos.ok){
+
+alert("✅ Seguimiento guardado correctamente");
+
+location.reload();
+
+}else{
+
+alert(datos.mensaje);
+
+}
+
+}
+</script>
+
+</body>
+</html>
