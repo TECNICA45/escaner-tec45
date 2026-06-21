@@ -10,33 +10,150 @@
 
 <style>
 
-body{
-font-family:Arial;
-text-align:center;
-padding:20px;
+*{
+
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,Helvetica,sans-serif;
+
 }
 
-input,textarea,select,button{
-width:90%;
-max-width:500px;
-padding:12px;
-margin:10px;
+body{
+
+background:#edf2f7;
+
+}
+
+header{
+
+background:#0b57d0;
+color:white;
+padding:18px;
+text-align:center;
+font-size:28px;
+font-weight:bold;
+
+}
+
+.subtitulo{
+
+text-align:center;
+padding:10px;
 font-size:18px;
+color:#555;
+
+}
+
+.contenedor{
+
+width:95%;
+max-width:950px;
+margin:auto;
+
+}
+
+.tarjeta{
+
+background:white;
+padding:20px;
+margin:20px 0;
+border-radius:12px;
+box-shadow:0 2px 12px rgba(0,0,0,.15);
+
+}
+
+input,
+textarea,
+select,
+button{
+
+width:100%;
+padding:12px;
+margin-top:10px;
+margin-bottom:15px;
+font-size:17px;
+border-radius:8px;
+border:1px solid #bbb;
+
 }
 
 button{
+
 background:#0b57d0;
 color:white;
 border:none;
-border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+
 }
 
-#datos{
+button:hover{
+
+background:#083f98;
+
+}
+
+.oculto{
+
 display:none;
-border:2px solid #0b57d0;
+
+}
+
+.fila{
+
+display:flex;
+gap:15px;
+flex-wrap:wrap;
+
+}
+
+.col{
+
+flex:1;
+min-width:280px;
+
+}
+
+.info{
+
+background:#f7f9fc;
 padding:15px;
-border-radius:10px;
-margin:15px;
+border-left:6px solid #0b57d0;
+border-radius:8px;
+
+}
+
+.estado{
+
+margin-top:15px;
+padding:12px;
+font-size:20px;
+font-weight:bold;
+text-align:center;
+border-radius:8px;
+
+}
+
+.pendiente{
+
+background:#ffdede;
+color:#b00000;
+
+}
+
+.proceso{
+
+background:#fff7d5;
+color:#8f6d00;
+
+}
+
+.cerrado{
+
+background:#dff7df;
+color:#006b2d;
+
 }
 
 </style>
@@ -45,67 +162,294 @@ margin:15px;
 
 <body>
 
-<h1>📋 Seguimiento Disciplinario</h1>
+<header>
+
+TEC45
+
+</header>
+
+<div class="subtitulo">
+
+Sistema de Seguimiento Disciplinario
+
+</div>
+
+<div class="contenedor">
+<div class="tarjeta">
+
+<h2>
+
+Ingreso del Responsable
+
+</h2>
 
 <input
-type="text"
+
+type="password"
+
+id="clave"
+
+placeholder="Clave"
+
+>
+
+<button onclick="validarResponsable()">
+
+Ingresar
+
+</button>
+
+<div id="responsableLogueado">
+
+</div>
+
+</div>
+<div
+
+id="contenido"
+
+class="oculto"
+
+>
+
+<div class="tarjeta">
+
+<h2>
+
+Buscar Reporte
+
+</h2>
+
+<input
+
 id="folio"
-placeholder="Folio 2627-0001"
+
+placeholder="2627-0001"
 
 >
 
 <button onclick="buscarReporte()">
+
 Buscar Reporte
+
 </button>
 
-<div id="datos">
+</div>
+<div
 
-<h3 id="reporta"></h3>
+id="panelReporte"
 
-<h3 id="reportado"></h3>
-
-<p id="motivo"></p>
-
-<input
-type="text"
-id="responsable"
-placeholder="Responsable"
+class="tarjeta oculto"
 
 >
 
+<h2>
+
+Información del Reporte
+
+</h2>
+
+<div class="fila">
+
+<div class="col">
+
+<div class="info">
+
+<h3>👤 Alumno que reporta</h3>
+
+<div id="reporta"></div>
+
+<div id="grupoReporta"></div>
+
+</div>
+
+</div>
+
+<div class="col">
+
+<div class="info">
+
+<h3>👤 Alumno reportado</h3>
+
+<div id="reportado"></div>
+
+<div id="grupoReportado"></div>
+
+</div>
+
+</div>
+
+</div>
+
+<br>
+
+<div class="info">
+
+<b>📋 Motivo</b>
+
+<div id="motivo"></div>
+
+</div>
+
+<br>
+
+<div class="fila">
+
+<div class="col">
+
+<div class="info">
+
+<b>📅 Fecha</b>
+
+<div id="fecha"></div>
+
+</div>
+
+</div>
+
+<div class="col">
+
+<div class="info">
+
+<b>🕒 Hora</b>
+
+<div id="hora"></div>
+
+</div>
+
+</div>
+
+</div>
+
+<div
+
+id="estado"
+
+class="estado pendiente"
+
+>
+
+PENDIENTE
+
+</div>
+
+</div>
+
+<div
+
+id="panelSeguimiento"
+
+class="tarjeta oculto"
+
+>
+
+<h2>
+
+Seguimiento
+
+</h2>
+
 <textarea
+
 id="accionRealizada"
+
+rows="4"
+
 placeholder="Acción realizada"
+
 ></textarea>
+
 <select id="tutorInformado">
-<option value="SI">Tutor informado: SI</option>
-<option value="NO">Tutor informado: NO</option>
+
+<option value="SI">
+
+Tutor informado: SI
+
+</option>
+
+<option value="NO">
+
+Tutor informado: NO
+
+</option>
+
 </select>
 
 <select id="citatorio">
-<option value="SI">Citatorio: SI</option>
-<option value="NO">Citatorio: NO</option>
+
+<option value="SI">
+
+Citatorio: SI
+
+</option>
+
+<option value="NO">
+
+Citatorio: NO
+
+</option>
+
 </select>
 
 <textarea
+
 id="acuerdo"
+
+rows="3"
+
 placeholder="Acuerdo"
+
 ></textarea>
 
 <select id="estatus">
-<option value="PENDIENTE">PENDIENTE</option>
-<option value="EN PROCESO">EN PROCESO</option>
-<option value="CERRADO">CERRADO</option>
+
+<option value="EN PROCESO">
+🟡 EN PROCESO
+</option>
+
+<option value="CERRADO">
+🟢 CERRADO
+</option>
+
 </select>
 
 <textarea
+
 id="observaciones"
+
+rows="4"
+
 placeholder="Observaciones"
+
 ></textarea>
 
 <button onclick="guardarSeguimiento()">
-Guardar Seguimiento
+
+💾 Guardar Seguimiento
+
 </button>
+
+</div>
+
+<div
+
+id="panelHistorial"
+
+class="tarjeta oculto"
+
+>
+
+<h2>
+
+📜 Historial del Reporte
+
+</h2>
+
+<div id="historial">
+
+Aquí aparecerán los seguimientos realizados.
+
+</div>
 
 </div>
 <script>
@@ -113,38 +457,146 @@ Guardar Seguimiento
 const API =
 "https://script.google.com/macros/s/AKfycbyDwW3m4z2Mrz878Czlbkpiy75WzV0sALyOJEBv3XzuQ33VRiBL3J0hS7PFE-QMnAoE8Q/exec";
 
-async function buscarReporte(){
+let responsableActual = "";
 
-const folio =
-document.getElementById("folio").value;
+/*=========================
+  VALIDAR RESPONSABLE
+==========================*/
+
+async function validarResponsable(){
+
+const clave =
+document.getElementById("clave").value.trim();
+
+if(clave==""){
+
+alert("Ingrese su clave");
+
+return;
+
+}
 
 const r = await fetch(
+
 API +
-"?accion=buscarReporte&folio=" +
-encodeURIComponent(folio)
+"?accion=validarResponsable&clave=" +
+encodeURIComponent(clave)
+
 );
 
 const datos = await r.json();
 
 if(datos.ok){
 
-document.getElementById("datos").style.display="block";
+responsableActual = datos.responsable;
 
-document.getElementById("reporta").innerHTML =
-"👤 Reporta: " + datos.reporta;
+document.getElementById("responsableLogueado").innerHTML =
+"✅ Bienvenido<br><b>"+datos.responsable+"</b>";
 
-document.getElementById("reportado").innerHTML =
-"👤 Reportado: " + datos.reportado;
-
-document.getElementById("motivo").innerHTML =
-"Motivo: " + datos.motivo;
+document.getElementById("contenido").classList.remove("oculto");
 
 }else{
 
 alert(datos.mensaje);
 
 }
-} //
+
+}
+
+/*=========================
+ BUSCAR REPORTE
+==========================*/
+
+async function buscarReporte(){
+
+const folio =
+document.getElementById("folio").value.trim();
+
+if(folio==""){
+
+alert("Ingrese un folio");
+
+return;
+
+}
+
+const r = await fetch(
+
+API +
+"?accion=buscarReporte&folio=" +
+encodeURIComponent(folio)
+
+);
+
+const datos = await r.json();
+
+if(!datos.ok){
+
+alert(datos.mensaje);
+
+return;
+
+}
+
+document.getElementById("panelReporte").classList.remove("oculto");
+
+document.getElementById("panelSeguimiento").classList.remove("oculto");
+
+document.getElementById("panelHistorial").classList.remove("oculto");
+
+cargarHistorial();
+
+document.getElementById("reporta").innerHTML =
+datos.reporta;
+
+document.getElementById("grupoReporta").innerHTML =
+datos.grupoReporta;
+
+document.getElementById("reportado").innerHTML =
+datos.reportado;
+
+document.getElementById("grupoReportado").innerHTML =
+datos.grupoReportado;
+
+document.getElementById("motivo").innerHTML =
+datos.motivo;
+
+document.getElementById("fecha").innerHTML =
+datos.fecha;
+
+document.getElementById("hora").innerHTML =
+datos.hora;
+
+const estado =
+document.getElementById("estado");
+
+estado.innerHTML = datos.estatus;
+
+estado.className="estado";
+
+if(datos.estatus=="PENDIENTE"){
+
+estado.classList.add("pendiente");
+
+}
+
+if(datos.estatus=="EN PROCESO"){
+
+estado.classList.add("proceso");
+
+}
+
+if(datos.estatus=="CERRADO"){
+
+estado.classList.add("cerrado");
+
+}
+  
+}
+/*=========================
+ GUARDAR SEGUIMIENTO
+==========================*/
+
 async function guardarSeguimiento(){
 
 const url =
@@ -153,7 +605,7 @@ API +
 "&folio=" +
 encodeURIComponent(document.getElementById("folio").value) +
 "&responsable=" +
-encodeURIComponent(document.getElementById("responsable").value) +
+encodeURIComponent(responsableActual) +
 "&accionRealizada=" +
 encodeURIComponent(document.getElementById("accionRealizada").value) +
 "&tutorInformado=" +
@@ -173,9 +625,12 @@ const datos = await r.json();
 
 if(datos.ok){
 
-alert("✅ Seguimiento guardado correctamente");
+alert(
+"✅ Seguimiento guardado correctamente\n\nResponsable:\n"+
+responsableActual
+);
 
-location.reload();
+buscarReporte();
 
 }else{
 
@@ -184,7 +639,59 @@ alert(datos.mensaje);
 }
 
 }
+
+/*=========================
+ HISTORIAL
+==========================*/
+
+async function cargarHistorial(){
+
+const folio =
+document.getElementById("folio").value;
+
+const r = await fetch(
+API +
+"?accion=historial&folio=" +
+encodeURIComponent(folio)
+);
+
+const datos = await r.json();
+
+if(!datos.ok){
+
+document.getElementById("historial").innerHTML =
+"Sin historial.";
+
+return;
+
+}
+
+let html="";
+
+datos.historial.forEach(function(x){
+
+html +=
+"<div style='border-bottom:1px solid #ddd;padding:10px'>" +
+
+"<b>"+x.fecha+"</b><br>" +
+
+"<b>"+x.responsable+"</b><br>" +
+
+x.accion +
+
+"<br><b>"+x.estatus+"</b>" +
+
+"</div>";
+
+});
+
+document.getElementById("historial").innerHTML =
+html;
+
+}
+
 </script>
 
 </body>
+
 </html>
