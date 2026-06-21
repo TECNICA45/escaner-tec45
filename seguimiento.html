@@ -663,7 +663,39 @@ alert(
 responsableActual
 );
 
-buscarReporte();
+// Cerrar sesión
+responsableActual = "";
+
+// Limpiar clave
+document.getElementById("clave").value = "";
+
+// Limpiar nombre del responsable
+document.getElementById("responsableLogueado").innerHTML = "";
+
+// Ocultar contenido
+document.getElementById("contenido").classList.add("oculto");
+
+// Limpiar formulario
+document.getElementById("folio").value = "";
+document.getElementById("accionRealizada").value = "";
+document.getElementById("acuerdo").value = "";
+document.getElementById("observaciones").value = "";
+
+document.getElementById("estatus").value = "EN PROCESO";
+document.getElementById("tutorInformado").value = "SI";
+document.getElementById("citatorio").value = "SI";
+
+// Ocultar paneles
+document.getElementById("panelReporte").classList.add("oculto");
+document.getElementById("panelSeguimiento").classList.add("oculto");
+document.getElementById("panelHistorial").classList.add("oculto");
+
+// Limpiar historial
+document.getElementById("historial").innerHTML =
+"Aquí aparecerán los seguimientos realizados.";
+
+// Regresar al campo de clave
+document.getElementById("clave").focus();
 
 }else{
 
