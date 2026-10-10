@@ -1,136 +1,131 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+  <title>PSICOPEDAGÓGICA TEC45</title>
 
-<title>Psicopedagógica TEC45</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
 
-<script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    * { box-sizing: border-box; }
 
-<style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f5f8;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
 
-body{
-font-family:Arial;
-text-align:center;
-background:#f2f5f8;
-padding:20px;
-}
+    .card {
+      max-width: 550px;
+      margin: 20px auto;
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 4px 15px #0002;
+    }
 
-.card{
-background:white;
-border-radius:15px;
-padding:20px;
-max-width:450px;
-margin:auto;
-box-shadow:0 4px 15px #aaa;
-}
+    h1 { color: #17365d; }
 
-h1{
-color:#17365d;
-}
+    #reader {
+      width: 100%;
+      margin: 20px auto;
+    }
 
-#lector{
-width:100%;
-margin:auto;
-}
+    #mensaje {
+      color: #17365d;
+      font-weight: bold;
+      margin: 15px 0;
+    }
 
-button{
-background:#17365d;
-color:white;
-border:0;
-padding:15px;
-border-radius:10px;
-font-size:16px;
-width:100%;
-margin-top:15px;
-}
-
-</style>
-
+    button {
+      background: #17365d;
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 17px;
+      width: 100%;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
-
 <body>
+  <main class="card">
+    <h1>📷 PSICOPEDAGÓGICA 45</h1>
+    <p>Escanea el código QR de la credencial del alumno.</p>
 
+    <div id="reader"></div>
+    <div id="mensaje">Preparando cámara...</div>
 
-<div class="card">
+    <button onclick="reiniciar()">
+      ESCANEAR OTRO ALUMNO
+    </button>
+  </main>
 
-<h1>📋 PSICOPEDAGÓGICA 45</h1>
+  <script>
+    const APP =
+      "https://script.google.com/macros/s/AKfycbxvI6o7AblL4ynZUnxZAolYGMv5XCn3Vd1lDvLgIhapoa-Mx4BFmWTuMm9R8pCzfVDe/exec";
 
-<p>
-Escuela Secundaria Técnica No. 45
-</p>
+    let scanner = null;
+    let procesando = false;
 
-<div id="lector"></div>
+    function iniciar() {
+      procesando = false;
 
+      document.getElementById("mensaje").textContent =
+        "Permite el acceso a la cámara.";
 
-<p id="mensaje"></p>
+      scanner = new Html5QrcodeScanner(
+        "reader",
+        { fps: 10, qrbox: 250 },
+        false
+      );
 
+      scanner.render(
+        async function(texto) {
+          if (procesando) return;
 
-</div>
+          const curp = texto.trim().toUpperCase();
 
+          if (!/^[A-ZÑ&]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]{2}$/.test(curp)) {
+            document.getElementById("mensaje").textContent =
+              "El QR no contiene una CURP válida.";
+            return;
+          }
 
-<script>
+          procesando = true;
 
+          document.getElementById("mensaje").textContent =
+            "CURP detectada. Abriendo ficha...";
 
-function abrirPsicopedagogica(curp){
+          try {
+            await scanner.clear();
+          } catch (e) {}
 
-let enlace =
-"https://script.google.com/macros/s/TU_ENLACE_APPS_SCRIPT/exec?curp="
-+
-encodeURIComponent(curp);
+          const url = APP +
+            "?accion=psicopedagogica&curp=" +
+            encodeURIComponent(curp);
 
+          window.location.href = url;
+        },
+        function(error) {}
+      );
+    }
 
-window.location.href = enlace;
+    function reiniciar() {
+      if (scanner) {
+        scanner.clear().catch(function() {});
+      }
+      document.getElementById("reader").innerHTML = "";
+      iniciar();
+    }
 
-
-}
-
-
-
-function resultadoQR(texto){
-
-document.getElementById("mensaje").innerHTML =
-"Alumno detectado:<br>" + texto;
-
-
-// Aquí manda la CURP al sistema
-
-abrirPsicopedagogica(texto);
-
-
-}
-
-
-
-let scanner = new Html5QrcodeScanner(
-
-"lector",
-
-{
-fps:10,
-qrbox:250
-}
-
-);
-
-
-scanner.render(
-
-resultadoQR,
-
-(error)=>{
-
-}
-
-);
-
-
-</script>
-
-
+    iniciar();
+  </script>
 </body>
-
 </html>
