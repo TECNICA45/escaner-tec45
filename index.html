@@ -2,8 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>ESCÁNER TEC45</title>
 
@@ -151,7 +150,7 @@ onclick="reiniciarCamara()">
 
 <script>
 const API =
-"https://script.google.com/macros/s/AKfycbzjVE9E4Vfqdey2xKhqBchqLWf7TqMXKI_U9IO3bAugFcNuhKf7y3nIzEJonU43vrY4/exec";
+"https://script.google.com/macros/s/AKfycbwngazsMR-6cuX4eCHumHKKiVcKNLQF7lRVUgmvMFiYypm2Fs9yAnIfRZhifCy9EXI/exec";
 
 let scanner = null;
 let procesando = false;
@@ -237,7 +236,7 @@ async function leido(textoQR) {
     );
 
     if (!respuesta.ok) {
-      throw new Error("Error de conexión");
+      throw new Error("Error HTTP " + respuesta.status);
     }
 
     const datos = await respuesta.json();
@@ -258,10 +257,13 @@ async function leido(textoQR) {
 
     } else {
       estado.textContent =
-        datos.mensaje || "Alumno no encontrado";
+        datos.mensaje || "No se pudo consultar al alumno";
 
       error.textContent =
-        "Verifique la credencial.";
+        "Respuesta del sistema: " +
+        (datos.mensaje || "Error desconocido");
+
+      console.error("Respuesta de Apps Script:", datos);
     }
 
   } catch (e) {
@@ -271,7 +273,8 @@ async function leido(textoQR) {
       "Error al consultar alumno";
 
     error.textContent =
-      "Revise internet e intente nuevamente.";
+      "Detalle: " +
+      (e.message || "Revise internet e intente nuevamente.");
 
   } finally {
     procesando = false;
