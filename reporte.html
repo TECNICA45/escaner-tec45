@@ -1,67 +1,90 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#123b68">
+<title>Generador de Reportes | TEC45</title>
 
-<title>Reporte TEC45</title>
-
-<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
 <style>
-body{
-font-family:Arial;
-text-align:center;
-padding:20px;
-}
-
-#reader{
-max-width:500px;
-margin:auto;
-}
-
-input,select,textarea,button{
-width:90%;
-max-width:500px;
-padding:12px;
-margin:10px;
-font-size:18px;
-}
-
-button{
-background:#0b57d0;
-color:white;
-border:none;
-border-radius:8px;
+*{box-sizing:border-box}
+body{margin:0;background:#eef3f8;color:#172536;font-family:Arial,Helvetica,sans-serif}
+header{background:#123b68;color:white;padding:20px 14px;text-align:center}
+header h1{margin:0;font-size:25px}
+header p{margin:7px 0 0;font-size:14px}
+main{width:min(960px,94%);margin:18px auto 40px}
+.card{background:white;border-radius:14px;padding:18px;margin:15px 0;box-shadow:0 3px 14px rgba(20,45,70,.10)}
+h2{font-size:20px;margin:0 0 14px}
+label{display:block;font-weight:bold;margin:12px 0 6px}
+input,select,textarea{width:100%;padding:13px;border:1px solid #c7d1dc;border-radius:9px;font-size:16px;background:white;color:#172536}
+textarea{min-height:95px;resize:vertical}
+button{border:0;border-radius:9px;padding:13px 15px;font-size:16px;font-weight:bold;background:#145da0;color:white;cursor:pointer}
+button:disabled{opacity:.55;cursor:wait}
+.btn-sec{background:#e6eef7;color:#123b68;border:1px solid #c5d5e5}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0}
+.btn-row button{width:100%}
+.hidden{display:none!important}
+.muted{color:#607080;font-size:13px;line-height:1.45}
+.success{background:#e8f7ed;border-left:5px solid #26934a;padding:12px;border-radius:8px;margin-top:12px;white-space:pre-line}
+.person-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.person-card{border:1px solid #d8e1ea;border-radius:12px;padding:15px}
+.person-card h2{font-size:18px}
+.reader{width:100%;max-width:420px;margin:12px auto}
+.selected{background:#edf7ff;border:1px solid #b8d8f2;border-radius:9px;padding:12px;margin-top:12px;line-height:1.5;white-space:pre-line}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.topline button{width:auto;padding:9px 12px;font-size:14px}
+.main-action{width:100%;background:#167343;font-size:18px;margin-top:8px}
+.login-button{width:100%;margin-top:12px}
+.center{text-align:center}
+.small{font-size:12px;color:#607080}
+@media(max-width:700px){
+.person-grid{grid-template-columns:1fr}
+.btn-row{grid-template-columns:1fr 1fr}
+.card{padding:15px}
 }
 </style>
-
 </head>
 
 <body>
+<header>
+<h1>SISE TEC45</h1>
+<p>Generador Universal de Reportes Escolares</p>
+</header>
 
-<h1>📋 Nuevo Reporte</h1>
+<main>
 
-<p>Escanee al alumno que reporta</p>
+<section id="loginCard" class="card">
+<h2>Ingreso del personal autorizado</h2>
+<p class="muted">Ingrese la clave registrada en la pestaña Responsables para consultar el padrón escolar y generar reportes.</p>
+<label for="claveAcceso">Clave de acceso</label>
+<input id="claveAcceso" type="password" autocomplete="current-password" placeholder="Escriba su clave">
+<button id="btnLogin" class="login-button" type="button" onclick="iniciarSesion()">Ingresar al generador</button>
+<div id="loginMensaje" class="muted" aria-live="polite"></div>
+</section>
 
-<div id="reader"></div>
+<section id="app" class="hidden">
 
-<input type="text" id="curpReporta" placeholder="CURP Reporta" readonly>
-
-<input type="text" id="curpReportado" placeholder="CURP Reportado" readonly>
-<div id="datosReporta" style="display:none;border:2px solid #2196F3;padding:15px;margin:10px;border-radius:10px;">
-<h3>👤 Alumno que reporta</h3>
-<div id="nombreReporta"></div>
-<div id="grupoReporta"></div>
+<div class="card topline">
+<div>
+<strong>Generador de reportes</strong>
+<div id="usuarioActivo" class="muted"></div>
+</div>
+<button class="btn-sec" type="button" onclick="cerrarSesion()">Cerrar sesión</button>
 </div>
 
-<div id="datosReportado" style="display:none;border:2px solid #f44336;padding:15px;margin:10px;border-radius:10px;">
-<h3>👤 Alumno reportado</h3>
-<div id="nombreReportado"></div>
-<div id="grupoReportado"></div>
+<div class="person-grid" id="tarjetasPersonas">
+<div id="cardReporta"></div>
+<div id="cardReportado"></div>
 </div>
+
+<section class="card">
+<h2>Información del reporte</h2>
+
+<label for="motivo">Motivo del reporte</label>
 <select id="motivo">
+<option value="">Seleccione el motivo</option>
 <option>Agresión verbal</option>
 <option>Agresión física</option>
 <option>Bullying</option>
@@ -71,144 +94,633 @@ border-radius:8px;
 <option>Otro</option>
 </select>
 
-<textarea id="observaciones" rows="4" placeholder="Observaciones"></textarea>
+<label for="observaciones">Observaciones</label>
+<textarea id="observaciones" placeholder="Describa brevemente los hechos u otra información relevante"></textarea>
 
-<button type="button" onclick="guardarReporte()">
-Guardar Reporte
-</button>
+<button id="btnGuardar" class="main-action" type="button" onclick="guardarReporte()">Guardar reporte y generar folio</button>
+<div id="resultado" aria-live="polite"></div>
+</section>
+</section>
+
+<p class="small center">SISE TEC45 · Acceso para personal autorizado</p>
+</main>
 
 <script>
+const API_REPORTE = https://script.google.com/macros/s/AKfycbyDwW3m4z2Mrz878Czlbkpiy75WzV0sALyOJEBv3XzuQ33VRiBL3J0hS7PFE-QMnAoE8Q/exec
 
-const API_REPORTE =
-"https://script.google.com/macros/s/AKfycbyDwW3m4z2Mrz878Czlbkpiy75WzV0sALyOJEBv3XzuQ33VRiBL3J0hS7PFE-QMnAoE8Q/exec";
+let tokenGenerador = "";
+let responsableActual = "";
+let gruposDisponibles = [];
+let directorioPersonal = [];
+let alumnosPorGrupo = {};
+let seleccionados = {reporta:null, reportado:null};
+let scannerActivo = null;
 
-let paso = 1;
-
-const scanner = new Html5QrcodeScanner(
-"reader",
-{
-fps:10,
-qrbox:250
-},
-false
-);
-
-scanner.render(function(curp){
-
-if(paso===1){
-
-document.getElementById("curpReporta").value=curp;
-
-fetch(
-API_REPORTE +
-"?accion=consultarAlumno&curp=" +
-encodeURIComponent(curp)
-)
-.then(r=>r.json())
-.then(datos=>{
-
-if(datos.ok){
-
-document.getElementById("datosReporta").style.display="block";
-
-document.getElementById("nombreReporta").innerHTML =
-"<b>" + datos.nombre + "</b>";
-
-document.getElementById("grupoReporta").innerHTML =
-"Grupo: " + datos.grupo;
-
+function elemento(id){
+  return document.getElementById(id);
 }
 
-});
+async function apiGet(accion, parametros){
+  const datos = Object.assign({
+    accion:accion,
+    token:tokenGenerador
+  }, parametros || {});
 
-alert("Ahora escanee al alumno reportado");
-
-paso=2;
-
-return;
-
+  const query = new URLSearchParams(datos);
+  const respuesta = await fetch(API_REPORTE + "?" + query.toString());
+  return await respuesta.json();
 }
 
-if(paso===2){
+async function apiPost(accion, parametros){
+  const datos = Object.assign({
+    accion:accion
+  }, parametros || {});
 
-document.getElementById("curpReportado").value=curp;
+  if(tokenGenerador) datos.token = tokenGenerador;
 
-fetch(
-API_REPORTE +
-"?accion=consultarAlumno&curp=" +
-encodeURIComponent(curp)
-)
-.then(r=>r.json())
-.then(datos=>{
+  const cuerpo = new URLSearchParams(datos);
 
-if(datos.ok){
+  const respuesta = await fetch(API_REPORTE, {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"
+    },
+    body:cuerpo.toString()
+  });
 
-document.getElementById("datosReportado").style.display="block";
-
-document.getElementById("nombreReportado").innerHTML =
-"<b>" + datos.nombre + "</b>";
-
-document.getElementById("grupoReportado").innerHTML =
-"Grupo: " + datos.grupo;
-
+  return await respuesta.json();
 }
 
-});
+async function iniciarSesion(){
+  const clave = elemento("claveAcceso").value.trim();
+  const boton = elemento("btnLogin");
 
-alert("Listo. Capture el motivo.");
+  if(!clave){
+    alert("Escriba su clave de acceso.");
+    return;
+  }
 
-paso=3;
+  boton.disabled = true;
+  elemento("loginMensaje").textContent = "Validando acceso...";
 
+  try{
+    const datos = await apiPost("iniciarSesionGenerador",{clave:clave});
+
+    if(!datos.ok){
+      elemento("loginMensaje").textContent = datos.mensaje || "No fue posible ingresar.";
+      return;
+    }
+
+    tokenGenerador = datos.token;
+    responsableActual = datos.responsable;
+
+    const resultados = await Promise.all([
+      apiGet("listarGrupos"),
+      apiGet("listarPersonalTEC45")
+    ]);
+
+    if(!resultados[0].ok || !resultados[1].ok){
+      alert((resultados[0].mensaje || resultados[1].mensaje) || "No se pudieron cargar los directorios.");
+      await cerrarSesion();
+      return;
+    }
+
+    gruposDisponibles = resultados[0].grupos || [];
+    directorioPersonal = resultados[1].personal || [];
+
+    elemento("loginCard").classList.add("hidden");
+    elemento("app").classList.remove("hidden");
+    elemento("usuarioActivo").textContent = "Sesión de: " + responsableActual;
+
+    construirTarjetas();
+
+  }catch(error){
+    elemento("loginMensaje").textContent = "Error de conexión: " + error.message;
+  }finally{
+    boton.disabled = false;
+  }
 }
-});
+
+async function cerrarSesion(){
+  await detenerEscaner();
+
+  if(tokenGenerador){
+    try{
+      await apiGet("cerrarSesionGenerador");
+    }catch(e){}
+  }
+
+  tokenGenerador = "";
+  responsableActual = "";
+  gruposDisponibles = [];
+  directorioPersonal = [];
+  alumnosPorGrupo = {};
+  seleccionados = {reporta:null,reportado:null};
+
+  elemento("app").classList.add("hidden");
+  elemento("loginCard").classList.remove("hidden");
+  elemento("claveAcceso").value = "";
+  elemento("loginMensaje").textContent = "Sesión cerrada.";
+}
+
+function construirTarjetas(){
+  elemento("cardReporta").innerHTML = construirTarjeta("reporta","¿Quién realiza el reporte?");
+  elemento("cardReportado").innerHTML = construirTarjeta("reportado","¿A quién se reporta?");
+
+  ["reporta","reportado"].forEach(function(lado){
+
+    elemento(lado+"_tipo").addEventListener("change",function(){
+      cambiarTipo(lado);
+    });
+
+    elemento(lado+"_grupo").addEventListener("change",function(){
+      cargarAlumnosGrupo(lado);
+    });
+
+    elemento(lado+"_alumnoSelect").addEventListener("change",function(){
+      seleccionarAlumnoGrupo(lado);
+    });
+
+    elemento(lado+"_area").addEventListener("change",function(){
+      cargarPersonasArea(lado);
+    });
+
+    elemento(lado+"_persona").addEventListener("change",function(){
+      seleccionarPersonal(lado);
+    });
+
+    cambiarTipo(lado);
+  });
+}
+
+function construirTarjeta(lado,titulo){
+  return `
+  <section class="card person-card">
+    <h2>${titulo}</h2>
+
+    <label for="${lado}_tipo">Tipo de persona</label>
+    <select id="${lado}_tipo">
+      <option value="ALUMNO">Alumno</option>
+      <option value="MAESTRO">Maestro</option>
+      <option value="OTRO_PERSONAL">Otro personal</option>
+    </select>
+
+    <div id="${lado}_panelAlumno" class="hidden">
+      <p class="muted">Identifique al alumno mediante una de estas dos opciones.</p>
+
+      <div class="btn-row">
+        <button type="button" class="btn-sec" onclick="cambiarMetodoAlumno('${lado}','qr')">Escanear QR</button>
+        <button type="button" class="btn-sec" onclick="cambiarMetodoAlumno('${lado}','grupo')">Seleccionar grupo</button>
+      </div>
+
+      <div id="${lado}_panelGrupo" class="hidden">
+        <label for="${lado}_grupo">Grado y grupo</label>
+        <select id="${lado}_grupo">
+          <option value="">Seleccione el grupo</option>
+        </select>
+
+        <label for="${lado}_alumnoSelect">Alumno</label>
+        <select id="${lado}_alumnoSelect">
+          <option value="">Primero seleccione un grupo</option>
+        </select>
+      </div>
+
+      <div id="${lado}_panelQR" class="hidden">
+        <button type="button" onclick="iniciarEscaner('${lado}')">Activar cámara y escanear CURP</button>
+        <div id="${lado}_reader" class="reader"></div>
+        <p class="muted">Permita el acceso a la cámara. El QR de la credencial debe contener la CURP del alumno.</p>
+      </div>
+    </div>
+
+    <div id="${lado}_panelPersonal" class="hidden">
+      <label for="${lado}_area">Área</label>
+      <select id="${lado}_area">
+        <option value="">Seleccione el área</option>
+      </select>
+
+      <label for="${lado}_persona">Nombre</label>
+      <select id="${lado}_persona">
+        <option value="">Seleccione el nombre</option>
+      </select>
+    </div>
+
+    <div id="${lado}_seleccion" class="selected hidden"></div>
+  </section>`;
+}
+
+function cambiarTipo(lado){
+  detenerEscaner();
+
+  seleccionados[lado] = null;
+  elemento(lado+"_seleccion").classList.add("hidden");
+  elemento(lado+"_panelAlumno").classList.add("hidden");
+  elemento(lado+"_panelPersonal").classList.add("hidden");
+  elemento(lado+"_panelGrupo").classList.add("hidden");
+  elemento(lado+"_panelQR").classList.add("hidden");
+
+  const tipo = elemento(lado+"_tipo").value;
+
+  if(tipo === "ALUMNO"){
+    elemento(lado+"_panelAlumno").classList.remove("hidden");
+    llenarGrupos(lado);
+  }else{
+    elemento(lado+"_panelPersonal").classList.remove("hidden");
+    llenarAreas(lado);
+  }
+}
+
+function llenarGrupos(lado){
+  const select = elemento(lado+"_grupo");
+  select.innerHTML = "";
+  select.add(new Option("Seleccione el grupo",""));
+
+  gruposDisponibles.forEach(function(grupo){
+    select.add(new Option(grupo,grupo));
+  });
+
+  const alumnos = elemento(lado+"_alumnoSelect");
+  alumnos.innerHTML = "";
+  alumnos.add(new Option("Primero seleccione un grupo",""));
+}
+
+function cambiarMetodoAlumno(lado,metodo){
+  detenerEscaner();
+
+  elemento(lado+"_panelGrupo").classList.add("hidden");
+  elemento(lado+"_panelQR").classList.add("hidden");
+  seleccionados[lado] = null;
+  elemento(lado+"_seleccion").classList.add("hidden");
+
+  if(metodo === "grupo"){
+    elemento(lado+"_panelGrupo").classList.remove("hidden");
+  }else{
+    elemento(lado+"_panelQR").classList.remove("hidden");
+    elemento(lado+"_reader").innerHTML = "";
+  }
+}
+
+async function cargarAlumnosGrupo(lado){
+  const grupo = elemento(lado+"_grupo").value;
+  const select = elemento(lado+"_alumnoSelect");
+
+  select.innerHTML = "";
+  select.add(new Option("Cargando alumnos...",""));
+
+  seleccionados[lado] = null;
+  elemento(lado+"_seleccion").classList.add("hidden");
+
+  if(!grupo){
+    select.innerHTML = "";
+    select.add(new Option("Primero seleccione un grupo",""));
+    return;
+  }
+
+  try{
+    if(!alumnosPorGrupo[grupo]){
+      const datos = await apiGet("listarAlumnosGrupo",{grupo:grupo});
+
+      if(!datos.ok){
+        tratarSesion(datos);
+        alert(datos.mensaje || "No se pudieron consultar los alumnos.");
+        return;
+      }
+
+      alumnosPorGrupo[grupo] = datos.alumnos || [];
+    }
+
+    select.innerHTML = "";
+    select.add(new Option("Seleccione al alumno",""));
+
+    alumnosPorGrupo[grupo].forEach(function(alumno){
+      select.add(new Option(alumno.nombre,alumno.curp));
+    });
+
+    if(alumnosPorGrupo[grupo].length === 0){
+      select.innerHTML = "";
+      select.add(new Option("No hay alumnos en este grupo",""));
+    }
+
+  }catch(error){
+    alert("Error al consultar el grupo: " + error.message);
+  }
+}
+
+function seleccionarAlumnoGrupo(lado){
+  const grupo = elemento(lado+"_grupo").value;
+  const curp = elemento(lado+"_alumnoSelect").value;
+  const lista = alumnosPorGrupo[grupo] || [];
+  const alumno = lista.find(function(x){return x.curp === curp;});
+
+  if(!alumno){
+    seleccionados[lado] = null;
+    elemento(lado+"_seleccion").classList.add("hidden");
+    return;
+  }
+
+  seleccionados[lado] = {
+    tipo:"ALUMNO",
+    nombre:alumno.nombre,
+    curp:alumno.curp,
+    grupo:alumno.grupo,
+    clave:"",
+    area:""
+  };
+
+  mostrarSeleccion(lado);
+}
+
+async function iniciarEscaner(lado){
+  await detenerEscaner();
+
+  if(typeof Html5Qrcode === "undefined"){
+    alert("No se pudo cargar el lector QR. Revise su conexión a internet.");
+    return;
+  }
+
+  const readerId = lado+"_reader";
+  elemento(readerId).innerHTML = "";
+
+  try{
+    scannerActivo = new Html5Qrcode(readerId);
+
+    await scannerActivo.start(
+      {facingMode:"environment"},
+      {fps:10,qrbox:{width:240,height:240}},
+      async function(textoQR){
+        await detenerEscaner();
+        await consultarAlumnoQR(lado,textoQR);
+      },
+      function(){}
+    );
+
+  }catch(error){
+    await detenerEscaner();
+    alert("No se pudo activar la cámara. Verifique los permisos del navegador.");
+  }
+}
+
+async function detenerEscaner(){
+  if(scannerActivo){
+    const actual = scannerActivo;
+    scannerActivo = null;
+
+    try{
+      await actual.stop();
+    }catch(e){}
+
+    try{
+      await actual.clear();
+    }catch(e){}
+  }
+}
+
+async function consultarAlumnoQR(lado,curp){
+  curp = String(curp || "").trim().toUpperCase();
+
+  if(curp.length !== 18){
+    alert("El código leído no parece ser una CURP válida.");
+    return;
+  }
+
+  try{
+    const datos = await apiGet("consultarAlumno",{curp:curp});
+
+    if(!datos.ok){
+      tratarSesion(datos);
+      alert(datos.mensaje || "Alumno no encontrado.");
+      return;
+    }
+
+    seleccionados[lado] = {
+      tipo:"ALUMNO",
+      nombre:datos.nombre,
+      curp:datos.curp,
+      grupo:datos.grupo,
+      clave:"",
+      area:""
+    };
+
+    mostrarSeleccion(lado);
+
+  }catch(error){
+    alert("No se pudo consultar la CURP: " + error.message);
+  }
+}
+
+function llenarAreas(lado){
+  const tipo = elemento(lado+"_tipo").value;
+  const tipoDirectorio = tipo === "MAESTRO" ? "docente" : "otro personal";
+
+  const lista = directorioPersonal.filter(function(p){
+    return String(p.tipo || "").trim().toLowerCase() === tipoDirectorio;
+  });
+
+  const areas = [...new Set(lista.map(function(p){
+    return p.area;
+  }).filter(Boolean))];
+
+  const select = elemento(lado+"_area");
+  select.innerHTML = "";
+  select.add(new Option("Seleccione el área",""));
+
+  areas.sort(function(a,b){
+    return a.localeCompare(b,"es");
+  });
+
+  areas.forEach(function(area){
+    select.add(new Option(area,area));
+  });
+
+  const persona = elemento(lado+"_persona");
+  persona.innerHTML = "";
+  persona.add(new Option("Primero seleccione el área",""));
+
+  seleccionados[lado] = null;
+  elemento(lado+"_seleccion").classList.add("hidden");
+}
+
+function cargarPersonasArea(lado){
+  const tipo = elemento(lado+"_tipo").value;
+  const area = elemento(lado+"_area").value;
+  const tipoDirectorio = tipo === "MAESTRO" ? "docente" : "otro personal";
+
+  const lista = directorioPersonal.filter(function(p){
+    return String(p.tipo || "").trim().toLowerCase() === tipoDirectorio &&
+      String(p.area || "").trim() === area;
+  });
+
+  const select = elemento(lado+"_persona");
+  select.innerHTML = "";
+  select.add(new Option("Seleccione el nombre",""));
+
+  lista.forEach(function(persona){
+    const pendiente = String(persona.verificacion || "").toLowerCase().includes("por confirmar");
+    const texto = persona.nombre + (pendiente ? " (pendiente de confirmar)" : "");
+    const opcion = new Option(texto,persona.clave);
+    opcion.disabled = pendiente;
+    select.add(opcion);
+  });
+
+  seleccionados[lado] = null;
+  elemento(lado+"_seleccion").classList.add("hidden");
+}
+
+function seleccionarPersonal(lado){
+  const clave = elemento(lado+"_persona").value;
+  const tipo = elemento(lado+"_tipo").value;
+
+  const persona = directorioPersonal.find(function(p){
+    return p.clave === clave;
+  });
+
+  if(!persona){
+    seleccionados[lado] = null;
+    elemento(lado+"_seleccion").classList.add("hidden");
+    return;
+  }
+
+  seleccionados[lado] = {
+    tipo:tipo,
+    nombre:persona.nombre,
+    curp:"",
+    grupo:"",
+    clave:persona.clave,
+    area:persona.area
+  };
+
+  mostrarSeleccion(lado);
+}
+
+function mostrarSeleccion(lado){
+  const persona = seleccionados[lado];
+  const caja = elemento(lado+"_seleccion");
+
+  if(!persona){
+    caja.classList.add("hidden");
+    return;
+  }
+
+  caja.classList.remove("hidden");
+
+  let detalle = persona.nombre;
+
+  if(persona.tipo === "ALUMNO"){
+    detalle += "\nGrupo: " + persona.grupo;
+  }else{
+    detalle += "\nÁrea: " + persona.area;
+  }
+
+  caja.textContent = "Seleccionado:\n" + detalle;
+}
+
+function tratarSesion(datos){
+  if(datos && datos.sesionExpirada){
+    alert("Su sesión expiró. Ingrese nuevamente.");
+    cerrarSesion();
+  }
+}
+
+function limpiarParticipantes(){
+  ["reporta","reportado"].forEach(function(lado){
+    elemento(lado+"_tipo").value = "ALUMNO";
+    elemento(lado+"_grupo").value = "";
+    elemento(lado+"_alumnoSelect").innerHTML = "";
+    elemento(lado+"_alumnoSelect").add(new Option("Primero seleccione un grupo",""));
+    elemento(lado+"_area").innerHTML = "";
+    elemento(lado+"_persona").innerHTML = "";
+    elemento(lado+"_panelGrupo").classList.add("hidden");
+    elemento(lado+"_panelQR").classList.add("hidden");
+    elemento(lado+"_reader").innerHTML = "";
+    seleccionados[lado] = null;
+    elemento(lado+"_seleccion").classList.add("hidden");
+    elemento(lado+"_panelPersonal").classList.add("hidden");
+    elemento(lado+"_panelAlumno").classList.remove("hidden");
+    llenarGrupos(lado);
+  });
+}
 
 async function guardarReporte(){
+  const reportante = seleccionados.reporta;
+  const reportado = seleccionados.reportado;
+  const motivo = elemento("motivo").value;
+  const observaciones = elemento("observaciones").value.trim();
+  const boton = elemento("btnGuardar");
 
-try{
+  if(!reportante){
+    alert("Identifique a la persona que realiza el reporte.");
+    return;
+  }
 
-const url =
-API_REPORTE +
-"?accion=reporte" +
-"&curpReporta=" +
-encodeURIComponent(document.getElementById("curpReporta").value) +
-"&curpReportado=" +
-encodeURIComponent(document.getElementById("curpReportado").value) +
-"&motivo=" +
-encodeURIComponent(document.getElementById("motivo").value) +
-"&observaciones=" +
-encodeURIComponent(document.getElementById("observaciones").value);
+  if(!reportado){
+    alert("Identifique a la persona reportada.");
+    return;
+  }
 
-const r = await fetch(url);
+  if(!motivo){
+    alert("Seleccione el motivo del reporte.");
+    return;
+  }
 
-const datos = await r.json();
+  const confirmacion = confirm(
+    "Confirme los datos del reporte:\n\n" +
+    "Reporta: " + reportante.nombre + "\n" +
+    "Reportado: " + reportado.nombre + "\n" +
+    "Motivo: " + motivo + "\n\n" +
+    "¿Desea guardar y generar el folio?"
+  );
 
-if(datos.ok){
+  if(!confirmacion) return;
 
-alert(
-"✅ REPORTE REGISTRADO\n\n" +
-"Folio: " + datos.folio +
-"\n\n👤 Reporta:\n" + datos.reporta +
-"\n\n👤 Reportado:\n" + datos.reportado
-);
+  boton.disabled = true;
+  boton.textContent = "Guardando reporte...";
 
-location.reload();
+  try{
+    const datos = await apiPost("reporte",{
+      reportanteTipo:reportante.tipo,
+      reportanteCurp:reportante.curp || "",
+      reportanteClave:reportante.clave || "",
+      reportadoTipo:reportado.tipo,
+      reportadoCurp:reportado.curp || "",
+      reportadoClave:reportado.clave || "",
+      motivo:motivo,
+      observaciones:observaciones
+    });
 
-}else{
+    if(!datos.ok){
+      tratarSesion(datos);
+      alert(datos.mensaje || "No se pudo guardar el reporte.");
+      return;
+    }
 
-alert(datos.mensaje);
+    elemento("resultado").className = "success";
+    elemento("resultado").textContent =
+      "REPORTE REGISTRADO CORRECTAMENTE\n" +
+      "Folio: " + datos.folio + "\n" +
+      "Reporta: " + datos.reporta + "\n" +
+      "Reportado: " + datos.reportado;
 
+    alert(
+      "REPORTE REGISTRADO\n\n" +
+      "Folio: " + datos.folio + "\n\n" +
+      "Reporta: " + datos.reporta + "\n" +
+      "Reportado: " + datos.reportado
+    );
+
+    elemento("motivo").value = "";
+    elemento("observaciones").value = "";
+    limpiarParticipantes();
+
+  }catch(error){
+    alert("Error al guardar: " + error.message);
+  }finally{
+    boton.disabled = false;
+    boton.textContent = "Guardar reporte y generar folio";
+  }
 }
 
-}catch(error){
-
-alert("ERROR: " + error);
-
-}
-
-}
-
-
+elemento("claveAcceso").addEventListener("keydown",function(event){
+  if(event.key === "Enter") iniciarSesion();
+});
 </script>
-
 </body>
 </html>
