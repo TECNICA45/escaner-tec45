@@ -423,6 +423,50 @@ placeholder="Observaciones"
 
 ></textarea>
 
+<!-- SANCIONES Y MEDIDAS DISCIPLINARIAS -->
+<div style="margin:20px 0; padding:15px; border:1px solid #ccc; border-radius:10px;">
+
+  <h3>⚖️ Sanciones y medidas disciplinarias</h3>
+
+  <label for="sancion">Sanción o medida aplicada:</label>
+  <select id="sancion">
+    <option value="">Sin medida registrada</option>
+    <option>Llamado de atención</option>
+    <option>Amonestación escrita</option>
+    <option>Actividad formativa</option>
+    <option>Suspensión autorizada</option>
+    <option>Otra medida</option>
+  </select>
+
+  <label for="curpAlumno">CURP del alumno:</label>
+  <input type="text" id="curpAlumno"
+         maxlength="18"
+         placeholder="CURP del alumno involucrado">
+
+  <label for="fechaInicio">Fecha de inicio:</label>
+  <input type="date" id="fechaInicio">
+
+  <label for="fechaTermino">Fecha de término:</label>
+  <input type="date" id="fechaTermino">
+
+  <label for="duracionDias">Duración en días escolares:</label>
+  <input type="number" id="duracionDias" min="1">
+
+  <label for="estadoCumplimiento">Estado de cumplimiento:</label>
+  <select id="estadoCumplimiento">
+    <option value="">Sin seleccionar</option>
+    <option>PROGRAMADA</option>
+    <option>EN CURSO</option>
+    <option>CUMPLIDA</option>
+    <option>CANCELADA</option>
+  </select>
+
+  <label for="responsableAutoriza">Responsable que autoriza:</label>
+  <input type="text" id="responsableAutoriza"
+         placeholder="Nombre del responsable">
+
+</div>
+  
 <button onclick="guardarSeguimiento()">
 
 💾 Guardar Seguimiento
