@@ -656,9 +656,29 @@ encodeURIComponent(document.getElementById("acuerdo").value) +
 "&estatus=" +
 encodeURIComponent(document.getElementById("estatus").value) +
 "&observaciones=" +
-encodeURIComponent(document.getElementById("observaciones").value);
+encodeURIComponent(document.getElementById("observaciones").value) +
+"&sancion=" +
+encodeURIComponent(document.getElementById("sancion").value) +
+"&curpAlumno=" +
+encodeURIComponent(document.getElementById("curpAlumno").value.trim().toUpperCase()) +
+"&fechaInicio=" +
+encodeURIComponent(document.getElementById("fechaInicio").value) +
+"&fechaTermino=" +
+encodeURIComponent(document.getElementById("fechaTermino").value) +
+"&duracionDias=" +
+encodeURIComponent(document.getElementById("duracionDias").value) +
+"&estadoCumplimiento=" +
+encodeURIComponent(document.getElementById("estadoCumplimiento").value) +
+"&responsableAutoriza=" +
+encodeURIComponent(document.getElementById("responsableAutoriza").value);
 
-const r = await fetch(url);
+const r = await fetch(API, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/x-www-form-urlencoded"
+  },
+  body: url.split("?")[1]
+});
 
 const datos = await r.json();
 
@@ -690,6 +710,17 @@ document.getElementById("observaciones").value = "";
 document.getElementById("estatus").value = "EN PROCESO";
 document.getElementById("tutorInformado").value = "SI";
 document.getElementById("citatorio").value = "SI";
+[
+  "sancion",
+  "curpAlumno",
+  "fechaInicio",
+  "fechaTermino",
+  "duracionDias",
+  "estadoCumplimiento",
+  "responsableAutoriza"
+].forEach(function(id) {
+  document.getElementById(id).value = "";
+});
 
 // Ocultar paneles
 document.getElementById("panelReporte").classList.add("oculto");
