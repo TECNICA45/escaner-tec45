@@ -506,7 +506,7 @@ let responsableActual = "";
 /*=========================
   VALIDAR RESPONSABLE
 ==========================*/
-
+let tokenSesion = "";
 async function validarResponsable(){
 
 const clave = document.getElementById("clave").value.trim();
@@ -518,15 +518,16 @@ if(clave==""){
 
 const r = await fetch(
 API +
-"?accion=validarResponsable&clave=" +
+"?accion=iniciarSesionGenerador&clave=" +
 encodeURIComponent(clave)
 );
 
 const datos = await r.json();
 
 if(datos.ok){
-
-    responsableActual = datos.responsable;
+    tokenSesion = datos.token;
+  responsableActual = datos.responsable;
+    
 
     document.getElementById("responsableLogueado").innerHTML =
     "✅ Bienvenido<br><b>" + datos.responsable + "</b>";
@@ -563,7 +564,9 @@ const r = await fetch(
 
 API +
 "?accion=buscarReporte&folio=" +
-encodeURIComponent(folio)
+encodeURIComponent(folio) +
+"&token=" +
+encodeURIComponent(tokenSesion)
 
 );
 
@@ -670,7 +673,9 @@ encodeURIComponent(document.getElementById("duracionDias").value) +
 "&estadoCumplimiento=" +
 encodeURIComponent(document.getElementById("estadoCumplimiento").value) +
 "&responsableAutoriza=" +
-encodeURIComponent(document.getElementById("responsableAutoriza").value);
+encodeURIComponent(document.getElementById("responsableAutoriza").value) +
+"&token=" +
+encodeURIComponent(tokenSesion);
 
 const r = await fetch(API, {
   method: "POST",
@@ -754,7 +759,9 @@ document.getElementById("folio").value;
 const r = await fetch(
 API +
 "?accion=historial&folio=" +
-encodeURIComponent(folio)
+encodeURIComponent(folio) +
+"&token=" +
+encodeURIComponent(tokenSesion)
 );
 
 const datos = await r.json();
